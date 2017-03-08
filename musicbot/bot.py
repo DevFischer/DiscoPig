@@ -1505,7 +1505,7 @@ class MusicBot(discord.Client):
                 raise exceptions.CommandError(
                     'Unreasonable volume provided: {}%. Provide a value between 1 and 100.'.format(new_volume), expire_in=20)
 
-async def cmd_pladd(self, player, song_url=None):
+    async def cmd_pladd(self, player, song_url=None):
         """
         Usage:
             {command_prefix}pladd current song
