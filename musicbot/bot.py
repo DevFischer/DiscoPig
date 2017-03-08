@@ -2521,9 +2521,6 @@ class MusicBot(discord.Client):
     async def cmd_phantom(self, player, author):
         return Response("https://media.giphy.com/media/W7dVvrrqbnmUw/giphy.gif",delete_after=90)
 
-    asynce def cmd_garbage(self, player, author):
-        return Response(you suck,delete_after=90)
-
 if __name__ == '__main__':
     bot = MusicBot()
     bot.run()
