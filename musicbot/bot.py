@@ -2507,7 +2507,11 @@ class MusicBot(discord.Client):
     async def cmd_welcome(self, player, author):
         return Response("https://media3.giphy.com/media/PriWwj8RzzgfC/200w.webp#629", delete_after=90)
 
+    async def cmd_gay(self, player, author):
+        return response("https://upload.wikimedia.org/wikipedia/commons/e/e1/Cologne_Germany_Cologne-Gay-Pride-2015_Parade-05.jpg",delete_after=90)
 
+    async def cmd_rainbow(self, player, author):
+        return response("https://www.howitworksdaily.com/wp-content/uploads/2015/06/844x528xdouble-rainbow-wide-wallpaper-339755.jpg.pagespeed.ic.2g7InWQ3zk.jpg",delete_after=90)
 
 if __name__ == '__main__':
     bot = MusicBot()
