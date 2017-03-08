@@ -28,6 +28,7 @@ from musicbot.player import MusicPlayer
 from musicbot.config import Config, ConfigDefaults
 from musicbot.permissions import Permissions, PermissionsDefaults
 from musicbot.utils import load_file, write_file, sane_round_int
+from musicbot.utils import load_file, write_file, sane_round_int, illegal_char
 
 from . import exceptions
 from . import downloader
@@ -1504,7 +1505,7 @@ class MusicBot(discord.Client):
                 raise exceptions.CommandError(
                     'Unreasonable volume provided: {}%. Provide a value between 1 and 100.'.format(new_volume), expire_in=20)
 
-    async def cmd_pladd(self, player, song_url=None):
+async def cmd_pladd(self, player, song_url=None):
         """
         Usage:
             {command_prefix}pladd current song
@@ -1515,35 +1516,32 @@ class MusicBot(discord.Client):
 
         #No url provided
         if not song_url:
-            #Check if there is something playing
-            if not player._current_entry:
-                raise exceptions.CommandError('There is nothing playing.', expire_in=20)
-
-            #Get the url of the current entry
-            else:
+            #Check if there is something playing and get the information
+            if player._current_entry:
                 song_url = player._current_entry.url
                 title = player._current_entry.title
+
+            else:
+                raise exceptions.CommandError('There is nothing playing.', expire_in=20)
 
         else:
             #Get song info from url
             info = await self.downloader.safe_extract_info(player.playlist.loop, song_url, download=False, process=False)
+            title = info.get('title', '')
 
             #Verify proper url
-            if not info:
+            if not title:
                 raise exceptions.CommandError('Invalid url. Please insure link is a valid YouTube, SoundCloud or BandCamp url.', expire_in=20)
 
-            else:
-                title = info.get('title', '')
-
-        #Verify that the song isn't already in our playlist
+        #Verify song isn't already in our playlist
         for url in player.autoplaylist:
             if song_url == url:
-                player.autoplaylist.append(song_url)
-                write_file(player.autoplaylist_file, player.autoplaylist)
-                player.autoplaylist = load_file(player.autoplaylist_file)
-                return Response("Added %s to autoplaylist." % title, delete_after=30)
+                return Response("Song already present in autoplaylist.", delete_after=30)
 
-        return Response("Song already present in autoplaylist.", delete_after=30)
+        player.autoplaylist.append(song_url)
+        write_file(player.autoplaylist_file, player.autoplaylist)
+        player.autoplaylist = load_file(player.autoplaylist_file)
+        return Response("Added %s to autoplaylist." % title, delete_after=30)
 
     async def cmd_plremove(self, player, song_url=None):
         """
@@ -1595,24 +1593,31 @@ class MusicBot(discord.Client):
         """
 
         #Verify file name was provided
-        if not file_name:
-        	raise exceptions.CommandError('Please specify a file name for the new playlist.', expire_in=20)
+        if file_name:
+            #Verify no illegal characters
+            if illegal_char(file_name, "[/\\:*?\"<>|]"):
+                raise exceptions.CommandError('Please ensure there are no illegal characters in the filename.', expire_in=20)
 
-        #Create a new file
-        else:
-        	#Append the file extension and make everything lowercase (important for checking against already existing files)
-        	fileName = (file_name + ".txt").lower()
+            #Create new file
+            else:
+                #Append the file extension and make everything lowercase (important for checking against already existing files)
+                fileName = (file_name + ".txt").lower()
 
-        	#Get the filepath, and set it to the autoplaylist directory
-        	savePath = os.path.join(os.path.dirname(__file__), os.pardir) + "\config\\"
+                #Get the filepath, and set it to the autoplaylist directory
+                savePath = os.path.join(os.path.dirname(__file__), os.pardir) + "\config\\"
 
                 #Check to make sure there isn't already a file with the same name
-        	for root, dirs, files in os.walk(savePath):
-        		if fileName in files:
-        			raise exceptions.CommandError("%s already exists in %s." % (fileName, savePath), expire_in=20)
+                for root, dirs, files in os.walk(savePath):
+                    for file in files:
+                        if fileName in file:
+                            raise exceptions.CommandError("%s already exists in %s." % (fileName, savePath), expire_in=20)
 
-        	write_file(savePath + fileName, "")
-        	return Response("Created new playlist called %s." % file_name)
+                write_file(savePath + fileName, "")
+                return Response("Created new playlist called %s." % file_name, delete_after=30)
+
+        #Inform user
+        else:
+            raise exceptions.CommandError('Please specify a file name for the new playlist.', expire_in=20)
 
     async def cmd_loadpl(self, player, file_name=None):
         """
