@@ -2426,6 +2426,24 @@ class MusicBot(discord.Client):
 
 ####### POST FUNNY PICS #######
 
+    async def cmd_pigangry(self, player, author):
+        """
+        Dont piss off Slam Pig
+        """
+        return Response("https://media2.giphy.com/media/ybxK16j4qvyU0/200w.webp#618", delete_after=90)
+
+    async def cmd_slampig(self, player, author):
+        """
+        Super Pig
+        """
+        return Response("https://media4.giphy.com/media/M4eHyjbvHBf3y/200.webp#221", delete_after=90)
+
+    async def cmd_rl(self, player, author):
+        """
+        Rocket League?
+        """
+        return Response("https://media3.giphy.com/media/zdGGcS4UQz6fu/200.webp#969", delete_after=90)
+
     async def cmd_usa(self, player, author):
         """
         Usage: America is GREAT
@@ -2482,6 +2500,12 @@ class MusicBot(discord.Client):
 
     async def cmd_helpme(self, player, author):
         return Response("http://i.imgur.com/WIDxWTd.png", delete_after=45)
+
+    async def cmd_minecraft(self, player, author):
+        return Response("https://media2.giphy.com/media/FMPHoDM5ZIK40/200.webp#1294", delete_after=90)
+
+    async def cmd_welcome(self, player, author):
+        return Response("https://media3.giphy.com/media/PriWwj8RzzgfC/200w.webp#629", delete_after=90)
 
 
 
