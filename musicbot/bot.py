@@ -2513,6 +2513,9 @@ class MusicBot(discord.Client):
     async def cmd_rainbow(self, player, author):
         return Response("https://www.howitworksdaily.com/wp-content/uploads/2015/06/844x528xdouble-rainbow-wide-wallpaper-339755.jpg.pagespeed.ic.2g7InWQ3zk.jpg",delete_after=90)
 
+      async def cmd_phantom(self, player, author):
+        return Response("https://media.giphy.com/media/W7dVvrrqbnmUw/giphy.gif",delete_after=90)
+
 if __name__ == '__main__':
     bot = MusicBot()
     bot.run()
